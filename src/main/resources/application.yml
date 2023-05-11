@@ -1,0 +1,16 @@
+server:
+  port: 19527
+
+spring:
+  application:
+    name: rios-patent
+
+  jackson:
+    generator:
+      write_numbers_as_strings: true
+
+  mvc:
+    throw-exception-if-no-handler-found: true
+
+  profiles:
+    active: dev
