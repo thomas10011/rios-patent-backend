@@ -16,13 +16,13 @@ public class ShellUtil {
 
     public static String mainCode = "package org.rioslab.spark.core\n" +
         "import org.rioslab.spark.core.util.CacheUtil\n" +
-        "import package\n" +
+        "import PACKAGE\n" +
         "\n" +
         "object App {\n" +
         "    def main(args: Array[String]): Unit = {\n" +
         "        // 0号参数作为 task id\n" +
         "        val taskID = args(0)\n" +
-        "        val res = application.run(args)\n" +
+        "        val res = APPLICATION.run(args)\n" +
         "        if (res != null && res.nonEmpty) CacheUtil.set(taskID, res)\n" +
         "    }\n" +
         "}"
@@ -47,7 +47,7 @@ public class ShellUtil {
         // 写入代码
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(mainFile));
-            writer.write(mainCode.replace("package", packageName + "." + className).replace("application", className));
+            writer.write(mainCode.replace("PACKAGE", packageName + "." + className).replace("APPLICATION", className));
             writer.close();
         }
         catch (IOException e) {
