@@ -14,6 +14,7 @@ import org.rioslab.patent.util.CacheUtil;
 import org.rioslab.patent.util.ShellUtil;
 import org.rioslab.patent.vo.PublicationsVO;
 import org.rioslab.patent.vo.SparkExecuteVO;
+import org.rioslab.patent.vo.SubmitJobVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -40,10 +41,10 @@ public class SparkController {
 
     @ApiOperation("提交Spark作业")
     @PostMapping("/submit")
-    CommonResult<?> submitJob(@RequestParam("packageName") String packageName, @RequestParam("className") String className, @RequestBody String code) {
+    CommonResult<?> submitJob(@RequestParam("packageName") String packageName, @RequestParam("className") String className, @RequestBody SubmitJobVO body) {
 
         String taskID = IdUtil.randomUUID();
-        String output = ShellUtil.invoke(packageName, className, code, taskID);
+        String output = ShellUtil.invoke(packageName, className, body.getCode(), taskID);
 
         boolean hashData = null == CacheUtil.getString(taskID);
 

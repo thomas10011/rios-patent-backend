@@ -30,7 +30,7 @@ public class ShellUtil {
 
     public static String invoke(String packageName, String className, String code, String taskID) {
         // 如果其中一个为空，执行默认的程序
-        if (StringUtils.isEmpty(packageName) || StringUtils.isEmpty(className)) {
+        if (!packageName.startsWith("org.rioslab.spark.core.") || StringUtils.isEmpty(packageName) || StringUtils.isEmpty(className)) {
             writeMain("org.rioslab.spark.core.wc", "WordCountSQL");
         }
         else {
