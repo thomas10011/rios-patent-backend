@@ -57,7 +57,7 @@ public class ShellUtil {
         return true;
     }
 
-    public static boolean writeCode(String code, String packageName, String className) {
+    public static boolean writeCode(String packageName, String className, String code) {
         String dirStr = "/work/stu/hrtan/projects/rios-patent-execute/src/main/java/" +  packageName.replace(".", "/");
 
         // 创建目录以及文件
