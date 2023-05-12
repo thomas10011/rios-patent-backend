@@ -6,6 +6,7 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.rioslab.patent.annot.CheckPackage;
 import org.rioslab.patent.api.CommonResult;
@@ -36,6 +37,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/patent/publications")
 @CrossOrigin
+@Slf4j
 public class SparkController {
 
     @Autowired
@@ -67,6 +69,8 @@ public class SparkController {
 
         String taskID = IdUtil.randomUUID();
         ExecDTO exec = ShellUtil.run(packageName, className, taskID);
+
+        log.info("Generate task id = " + taskID);
 
         boolean hashData = null != CacheUtil.getString(taskID);
 
