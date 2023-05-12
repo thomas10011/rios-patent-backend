@@ -7,6 +7,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import io.swagger.annotations.ApiOperation;
 import org.json.JSONObject;
+import org.rioslab.patent.annot.CheckPackage;
 import org.rioslab.patent.api.CommonResult;
 import org.rioslab.patent.api.ResultCode;
 import org.rioslab.patent.entity.Publications;
@@ -40,10 +41,10 @@ public class SparkController {
     @Autowired
     IPublicationsService pubService;
 
-    @ApiOperation("提交Spark作业")
+    @ApiOperation("提交Spark作业并编译")
     @PostMapping("/submit")
+    @CheckPackage
     CommonResult<?> submitJob(@RequestParam("packageName") String packageName, @RequestParam("className") String className, @RequestBody SubmitJobVO body) {
-
         ExecDTO exec = ShellUtil.pack(packageName, className, body.getCode());
 
         MavenCompileVO vo = new MavenCompileVO()
@@ -61,6 +62,7 @@ public class SparkController {
 
     @ApiOperation("执行Spark作业")
     @PostMapping("/run")
+    @CheckPackage
     CommonResult<?> runJob(@RequestParam("packageName") String packageName, @RequestParam("className") String className) {
 
         String taskID = IdUtil.randomUUID();
