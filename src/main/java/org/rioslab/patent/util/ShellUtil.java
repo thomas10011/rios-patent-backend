@@ -131,6 +131,7 @@ public class ShellUtil {
             builder.directory(new File(workDir));
         }
         builder.command(cmdArr);
+        builder.redirectError(new File("/work/stu/hrtan/patent-error.log"));
 
         StringBuilder output = new StringBuilder();
         try {
@@ -142,6 +143,7 @@ public class ShellUtil {
             while ((line = reader.readLine()) != null) {
                 output.append(line).append("\n");
                 System.out.println(line);
+                System.out.flush(); // 立即打印输出
             }
 
             int exit = proc.waitFor();
