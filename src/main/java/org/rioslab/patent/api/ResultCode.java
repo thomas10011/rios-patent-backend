@@ -19,6 +19,10 @@ public enum ResultCode {
     Unauthorized("401", "用户未授权！"),
     NotFound("404", "找不到请求地址！"),
     InternalServerError("500", "内部服务器错误！"),
+
+    CompileError("10086", "Maven编译打包差出错！"),
+    RunSparkError("10087", "Spark运行出错！")
+
     ;
 
     private final String error_code;

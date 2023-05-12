@@ -19,12 +19,9 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel(value="PublicationsVO对象", description="")
-public class SparkExecuteVO implements Serializable {
-    private String taskID;
+public class MavenCompileVO implements Serializable {
 
     private String output;
-
-    private boolean hasData;
 
     private int exitCode;
 

@@ -1,7 +1,7 @@
 package org.rioslab.patent.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StringUtils;
+import org.rioslab.patent.vo.ExecDTO;
 
 import java.io.*;
 
@@ -28,21 +28,30 @@ public class ShellUtil {
         "}"
         ;
 
-    public static String invoke(String packageName, String className, String code, String taskID) {
+    public static ExecDTO pack(String packageName, String className, String code) {
         // 如果其中一个为空，执行默认的程序
-        if (!packageName.startsWith("org.rioslab.spark.core.") || StringUtils.isEmpty(packageName) || StringUtils.isEmpty(className)) {
-            writeMain("org.rioslab.spark.core.wc", "WordCountSQL");
+        ExecDTO res = new ExecDTO();
+        if (writeCode(packageName, className, code)) {
+            String[] arr = { "mvn", "package"};
+            res = execute(arr, "/work/stu/hrtan/projects/rios-patent-execute/");
         }
         else {
-            writeMain(packageName, className);
-            writeCode(packageName, className, code);
+            res.setExit(10086).setOutput("Error occurred when write code");
         }
+
         log.info("Maven package output.");
-        System.out.println(pack());
+        System.out.println(res.getOutput());
+
+        return res;
+    }
+
+
+    public static ExecDTO run(String packageName, String className, String taskID) {
+        writeMain(packageName, className);
         return submit(taskID);
     }
 
-    public static boolean writeMain(String packageName, String className) {
+    private static boolean writeMain(String packageName, String className) {
         File mainFile = new File("/work/stu/hrtan/projects/rios-patent-execute/src/main/java/App.scala");
         // 写入代码
         try {
@@ -57,7 +66,7 @@ public class ShellUtil {
         return true;
     }
 
-    public static boolean writeCode(String packageName, String className, String code) {
+    private static boolean writeCode(String packageName, String className, String code) {
         String dirStr = "/work/stu/hrtan/projects/rios-patent-execute/src/main/java/" +  packageName.replace(".", "/");
 
         // 创建目录以及文件
@@ -98,12 +107,8 @@ public class ShellUtil {
         return true;
     }
 
-    public static String pack() {
-        String[] arr = { "mvn", "package"};
-        return execute(arr, "/work/stu/hrtan/projects/rios-patent-execute/");
-    }
 
-    public static String submit(String taskID) {
+    private static ExecDTO submit(String taskID) {
         String[] arr = {
             "spark-submit",
             "--class",
@@ -117,9 +122,10 @@ public class ShellUtil {
     }
 
 
-    public static String execute(String[] cmdArr, String workDir) {
+    public static ExecDTO execute(String[] cmdArr, String workDir) {
 
         ProcessBuilder builder = new ProcessBuilder();
+        ExecDTO ret = new ExecDTO();
 
         if (workDir != null && !workDir.isEmpty()) {
             builder.directory(new File(workDir));
@@ -139,6 +145,7 @@ public class ShellUtil {
             }
 
             int exit = proc.waitFor();
+            ret.setExit(exit);
 
             log.info("Command execute exited with code: " + exit);
             proc.destroy();
@@ -148,7 +155,8 @@ public class ShellUtil {
             log.error("Exception occurred while Launching process: " + e.getMessage());
         }
 
-        return output.toString();
+        ret.setOutput(output.toString());
+        return ret;
     }
 
 

@@ -1,7 +1,7 @@
 package org.rioslab.patent.vo;
 
-import java.io.Serializable;
 
+import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -19,13 +19,10 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel(value="PublicationsVO对象", description="")
-public class SparkExecuteVO implements Serializable {
-    private String taskID;
+public class ExecDTO implements Serializable {
+
+    private int exit;
 
     private String output;
-
-    private boolean hasData;
-
-    private int exitCode;
 
 }

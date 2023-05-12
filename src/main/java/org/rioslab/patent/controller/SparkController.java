@@ -8,15 +8,16 @@ import cn.hutool.json.JSONUtil;
 import io.swagger.annotations.ApiOperation;
 import org.json.JSONObject;
 import org.rioslab.patent.api.CommonResult;
+import org.rioslab.patent.api.ResultCode;
 import org.rioslab.patent.entity.Publications;
 import org.rioslab.patent.service.IPublicationsService;
 import org.rioslab.patent.util.CacheUtil;
 import org.rioslab.patent.util.ShellUtil;
-import org.rioslab.patent.vo.PublicationsVO;
-import org.rioslab.patent.vo.SparkExecuteVO;
-import org.rioslab.patent.vo.SubmitJobVO;
+import org.rioslab.patent.vo.*;
+import org.rioslab.patent.vo.ExecDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.awt.*;
@@ -43,18 +44,41 @@ public class SparkController {
     @PostMapping("/submit")
     CommonResult<?> submitJob(@RequestParam("packageName") String packageName, @RequestParam("className") String className, @RequestBody SubmitJobVO body) {
 
-        String taskID = IdUtil.randomUUID();
-        String output = ShellUtil.invoke(packageName, className, body.getCode(), taskID);
+        ExecDTO exec = ShellUtil.pack(packageName, className, body.getCode());
 
-        boolean hashData = null == CacheUtil.getString(taskID);
-
-        SparkExecuteVO vo = new SparkExecuteVO()
-            .setTaskID(taskID)
-            .setOutput(output)
-            .setHasData(hashData)
+        MavenCompileVO vo = new MavenCompileVO()
+            .setExitCode(exec.getExit())
+            .setOutput(exec.getOutput())
             ;
 
-        return CommonResult.success().append(vo);
+        if (exec.getExit() == 0)
+            return CommonResult.success().append(vo);
+        else
+            return CommonResult.fail(ResultCode.CompileError).append(vo);
+    }
+
+
+
+    @ApiOperation("执行Spark作业")
+    @PostMapping("/run")
+    CommonResult<?> runJob(@RequestParam("packageName") String packageName, @RequestParam("className") String className) {
+
+        String taskID = IdUtil.randomUUID();
+        ExecDTO exec = ShellUtil.run(packageName, className, taskID);
+
+        boolean hashData = null != CacheUtil.getString(taskID);
+
+        SparkExecuteVO vo = new SparkExecuteVO()
+                .setTaskID(taskID)
+                .setOutput(exec.getOutput())
+                .setHasData(hashData)
+                .setExitCode(exec.getExit())
+                ;
+
+        if (exec.getExit() == 0)
+            return CommonResult.success().append(vo);
+        else
+            return CommonResult.fail(ResultCode.RunSparkError).append(vo);
     }
 
 
