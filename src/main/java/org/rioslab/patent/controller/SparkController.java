@@ -7,6 +7,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.rioslab.patent.annot.CheckPackage;
 import org.rioslab.patent.api.CommonResult;
@@ -93,7 +94,16 @@ public class SparkController {
     CommonResult<?> queryJobResult(@RequestParam("taskID") String taskID) {
         String json = CacheUtil.getString(taskID);
         if (null == json) return CommonResult.success().append("");
-        JSONArray array = JSONUtil.parseArray(json);
+        JSONArray array = null;
+        try {
+            array = JSONUtil.parseArray(json);
+        }
+        catch (JSONException e) {
+            log.error("Json解析错误");
+            log.error(e.getMessage());
+            log.error(e.getLocalizedMessage());
+            return CommonResult.fail(ResultCode.JsonParseError);
+        }
         return CommonResult.success().append(array);
     }
 

@@ -21,7 +21,8 @@ public enum ResultCode {
     InternalServerError("500", "内部服务器错误！"),
 
     CompileError("10086", "Maven编译打包差出错！"),
-    RunSparkError("10087", "Spark运行出错！")
+    RunSparkError("10087", "Spark运行出错！"),
+    JsonParseError("10088", "Json解析异常！")
 
     ;
 

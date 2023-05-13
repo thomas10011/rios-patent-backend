@@ -131,7 +131,7 @@ public class ShellUtil {
             builder.directory(new File(workDir));
         }
         builder.command(cmdArr);
-        builder.redirectError(new File("/work/stu/hrtan/patent-error.log"));
+        builder.redirectError(new File("/work/stu/hrtan/patent_error.log"));
 
         StringBuilder output = new StringBuilder();
         try {
