@@ -1,7 +1,6 @@
 package org.rioslab.patent.controller;
 
 
-import cn.hutool.cache.Cache;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONException;
@@ -11,20 +10,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.rioslab.patent.annot.CheckPackage;
 import org.rioslab.patent.api.CommonResult;
 import org.rioslab.patent.api.ResultCode;
-import org.rioslab.patent.entity.Publications;
 import org.rioslab.patent.service.IPublicationsService;
 import org.rioslab.patent.util.CacheUtil;
 import org.rioslab.patent.util.ShellUtil;
 import org.rioslab.patent.vo.*;
 import org.rioslab.patent.vo.ExecDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * <p>
