@@ -110,12 +110,7 @@ public class ShellUtil {
 
     private static ExecDTO submit(String taskID) {
         String[] arr = {
-            "spark-submit",
-            "--class",
-            "org.rioslab.spark.core.App",
-            "--master",
-            "spark://mn1",
-            "/work/stu/hrtan/projects/rios-patent-execute/target/rios-patent-execute-1.0-SNAPSHOT.jar",
+            "/work/stu/hrtan/spark-submit.sh",
             taskID
         };
         return execute(arr, null);
