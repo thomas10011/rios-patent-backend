@@ -36,15 +36,17 @@ public class SparkController {
     @Autowired
     IPublicationsService pubService;
 
-    @ApiOperation("提交Spark作业并编译")
+    @ApiOperation("提交Spark代码并编译")
     @PostMapping("/submit")
     @CheckPackage
     CommonResult<?> submitJob(@RequestParam("packageName") String packageName, @RequestParam("className") String className, @RequestBody SubmitJobVO body) {
-        ExecDTO exec = ShellUtil.pack(packageName, className, body.getCode());
+        String codeID = IdUtil.randomUUID();
+        ExecDTO exec = ShellUtil.pack(packageName, className, body.getCode(), codeID);
 
         MavenCompileVO vo = new MavenCompileVO()
             .setExitCode(exec.getExit())
             .setOutput(exec.getOutput())
+            .setCodeID(codeID)
             ;
 
         if (exec.getExit() == 0)
@@ -58,10 +60,10 @@ public class SparkController {
     @ApiOperation("执行Spark作业")
     @PostMapping("/run")
     @CheckPackage
-    CommonResult<?> runJob(@RequestParam("packageName") String packageName, @RequestParam("className") String className) {
+    CommonResult<?> runJob(@RequestParam("codeID") String codeID) {
 
         String taskID = IdUtil.randomUUID();
-        ExecDTO exec = ShellUtil.run(packageName, className, taskID);
+        ExecDTO exec = ShellUtil.run(taskID, codeID);
 
         log.info("Generate task id = " + taskID);
 

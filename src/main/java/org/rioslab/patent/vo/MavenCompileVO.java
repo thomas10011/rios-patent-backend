@@ -23,6 +23,8 @@ public class MavenCompileVO implements Serializable {
 
     private String output;
 
+    private String codeID;
+
     private int exitCode;
 
 }

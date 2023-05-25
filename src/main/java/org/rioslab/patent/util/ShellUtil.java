@@ -28,10 +28,14 @@ public class ShellUtil {
         "}"
         ;
 
-    public static ExecDTO pack(String packageName, String className, String code) {
+    public static ExecDTO pack(String packageName, String className, String code, String codeID) {
         // 如果其中一个为空，执行默认的程序
         ExecDTO res = new ExecDTO();
-        if (writeCode(packageName, className, code)) {
+        if (writeMain(packageName, className, codeID)) {
+            log.error("writeMain function return false!");
+            return  res;
+        }
+        if (writeCode(packageName, className, code, codeID)) {
             String[] arr = { "mvn", "package"};
             res = execute(arr, "/work/stu/hrtan/projects/rios-patent-execute/");
         }
@@ -46,15 +50,19 @@ public class ShellUtil {
     }
 
 
-    public static ExecDTO run(String packageName, String className, String taskID) {
-        writeMain(packageName, className);
-        return submit(taskID);
+    public static ExecDTO run(String taskID, String codeID) {
+        return submit(taskID, codeID);
     }
 
-    private static boolean writeMain(String packageName, String className) {
-        File mainFile = new File("/work/stu/hrtan/projects/rios-patent-execute/src/main/java/App.scala");
+    private static boolean writeMain(String packageName, String className, String codeID) {
+        File mainFile = new File("/tmp/patent/" + codeID + "/rios-patent-execute/src/main/java/App.scala");
+
         // 写入代码
         try {
+            if (!mainFile.exists() && !mainFile.createNewFile()) {
+                log.error("Failed to create file for code " + codeID + "!");
+                return false;
+            }
             BufferedWriter writer = new BufferedWriter(new FileWriter(mainFile));
             writer.write(mainCode.replace("PACKAGE", packageName + "." + className).replace("APPLICATION", className));
             writer.close();
@@ -66,8 +74,8 @@ public class ShellUtil {
         return true;
     }
 
-    private static boolean writeCode(String packageName, String className, String code) {
-        String dirStr = "/work/stu/hrtan/projects/rios-patent-execute/src/main/java/" +  packageName.replace(".", "/");
+    private static boolean writeCode(String packageName, String className, String code, String codeID) {
+        String dirStr = "/tmp/patent/"+ codeID + "/rios-patent-execute/src/main/java/" +  packageName.replace(".", "/");
 
         // 创建目录以及文件
         File dir = new File(dirStr);
@@ -108,10 +116,11 @@ public class ShellUtil {
     }
 
 
-    private static ExecDTO submit(String taskID) {
+    private static ExecDTO submit(String taskID, String codeID) {
         String[] arr = {
             "/work/stu/hrtan/spark-submit.sh",
-            taskID
+            taskID,
+            codeID
         };
         return execute(arr, null);
     }
