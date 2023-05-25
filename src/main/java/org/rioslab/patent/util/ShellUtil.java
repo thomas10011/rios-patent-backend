@@ -251,7 +251,7 @@ public class ShellUtil {
 
     private static ExecDTO submit(String taskID, String codeID) {
         String[] arr = {
-            "/work/stu/hrtan/spark-submit.sh",
+            "/work/stu/hrtan/spark_submit.sh",
             taskID,
             codeID
         };
