@@ -28,6 +28,51 @@ public class ShellUtil {
         "}"
         ;
 
+    public static String utilCode = "package org.rioslab.spark.core.util;\n" +
+            "\n" +
+            "import redis.clients.jedis.Jedis;\n" +
+            "import redis.clients.jedis.JedisPool;\n" +
+            "\n" +
+            "public class CacheUtil {\n" +
+            "\n" +
+            "    public static JedisPool pool = new JedisPool(\"localhost\", 6379);\n" +
+            "\n" +
+            "    public static boolean set(String key, String value) {\n" +
+            "        try (Jedis jedis = pool.getResource()) {\n" +
+            "            jedis.set(key, value);\n" +
+            "        }\n" +
+            "        catch (Exception e) {\n" +
+            "            e.printStackTrace();\n" +
+            "            return false;\n" +
+            "        }\n" +
+            "        return true;\n" +
+            "    }\n" +
+            "\n" +
+            "    public static boolean del(String key) {\n" +
+            "        try (Jedis jedis = pool.getResource()) {\n" +
+            "            jedis.del(key);\n" +
+            "        }\n" +
+            "        catch (Exception e) {\n" +
+            "            e.printStackTrace();\n" +
+            "            return false;\n" +
+            "        }\n" +
+            "        return true;\n" +
+            "    }\n" +
+            "\n" +
+            "    public static String getString(String key) {\n" +
+            "        String ret = \"\";\n" +
+            "        try (Jedis jedis = pool.getResource()) {\n" +
+            "            ret = jedis.get(key);\n" +
+            "        }\n" +
+            "        catch (Exception e) {\n" +
+            "            e.printStackTrace();\n" +
+            "        }\n" +
+            "        return ret;\n" +
+            "    }\n" +
+            "\n" +
+            "}"
+            ;
+
     public static String pomCode = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
             "<project xmlns=\"http://maven.apache.org/POM/4.0.0\"\n" +
             "         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
@@ -190,10 +235,11 @@ public class ShellUtil {
     private static boolean writeMain(String packageName, String className, String codeID) {
         String mainDir = "/tmp/patent/"+ codeID + "/rios-patent-execute/src/main/java/";
         String pomDir = "/tmp/patent/"+ codeID + "/rios-patent-execute/";
+        String utilDir = "/tmp/patent/"+ codeID + "/rios-patent-execute/src/main/java/org/rioslab/spark/core/util/";
         String code = mainCode.replace("PACKAGE", packageName + "." + className).replace("APPLICATION", className);
 
         // 写入代码
-        return writeFile(mainDir, className + ".scala", code) && writeFile(pomDir, "pom.xml", pomCode);
+        return writeFile(pomDir, "pom.xml", pomCode) && writeFile(mainDir, className + ".scala", code) && writeFile(utilDir, "CacheUtil.java", utilCode);
     }
 
     private static boolean writeCode(String packageName, String className, String code, String codeID) {
