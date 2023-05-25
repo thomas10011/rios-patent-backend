@@ -31,11 +31,7 @@ public class ShellUtil {
     public static ExecDTO pack(String packageName, String className, String code, String codeID) {
         // 如果其中一个为空，执行默认的程序
         ExecDTO res = new ExecDTO();
-        if (writeMain(packageName, className, codeID)) {
-            log.error("writeMain function return false!");
-            return  res;
-        }
-        if (writeCode(packageName, className, code, codeID)) {
+        if (writeMain(packageName, className, codeID) && writeCode(packageName, className, code, codeID)) {
             String[] arr = { "mvn", "package"};
             res = execute(arr, "/tmp/patent/" + codeID + "/rios-patent-execute/");
         }
