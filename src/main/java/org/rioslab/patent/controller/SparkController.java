@@ -59,7 +59,6 @@ public class SparkController {
 
     @ApiOperation("执行Spark作业")
     @PostMapping("/run")
-    @CheckPackage
     CommonResult<?> runJob(@RequestParam("codeID") String codeID) {
 
         String taskID = IdUtil.randomUUID();
