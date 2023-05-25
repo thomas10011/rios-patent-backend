@@ -37,7 +37,7 @@ public class ShellUtil {
         }
         if (writeCode(packageName, className, code, codeID)) {
             String[] arr = { "mvn", "package"};
-            res = execute(arr, "/work/stu/hrtan/projects/rios-patent-execute/");
+            res = execute(arr, "/tmp/patent/" + codeID + "/rios-patent-execute/");
         }
         else {
             res.setExit(10086).setOutput("Error occurred when write code");
@@ -54,44 +54,23 @@ public class ShellUtil {
         return submit(taskID, codeID);
     }
 
-    private static boolean writeMain(String packageName, String className, String codeID) {
-        File mainFile = new File("/tmp/patent/" + codeID + "/rios-patent-execute/src/main/java/App.scala");
-
-        // 写入代码
-        try {
-            if (!mainFile.exists() && !mainFile.createNewFile()) {
-                log.error("Failed to create file for code " + codeID + "!");
-                return false;
-            }
-            BufferedWriter writer = new BufferedWriter(new FileWriter(mainFile));
-            writer.write(mainCode.replace("PACKAGE", packageName + "." + className).replace("APPLICATION", className));
-            writer.close();
-        }
-        catch (IOException e) {
-            log.error("Exception occurred when write code main file.");
-            return false;
-        }
-        return true;
-    }
-
-    private static boolean writeCode(String packageName, String className, String code, String codeID) {
-        String dirStr = "/tmp/patent/"+ codeID + "/rios-patent-execute/src/main/java/" +  packageName.replace(".", "/");
-
+    private static boolean writeFile(String dirStr, String fileStr, String content) {
         // 创建目录以及文件
         File dir = new File(dirStr);
         if (!dir.exists()) {
             if (!dir.mkdirs()) {
-                log.error("Failed when create code directory.");
+                log.error("Failed when create directory = " + dirStr);
                 return false;
             }
         }
 
-        String filePath = dirStr + "/" + className + ".scala";
+        String filePath = dirStr + fileStr;
+
         File codeFile = new File(filePath);
         if (!codeFile.exists()) {
             try {
                 if (!codeFile.createNewFile()) {
-                    log.error("Failed when create code file.");
+                    log.error("Failed when create file = " + filePath);
                     return false;
                 }
             }
@@ -104,7 +83,7 @@ public class ShellUtil {
         // 写入代码
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(codeFile));
-            writer.write(code);
+            writer.write(content);
             writer.close();
         }
         catch (IOException e) {
@@ -113,6 +92,19 @@ public class ShellUtil {
         }
 
         return true;
+    }
+
+    private static boolean writeMain(String packageName, String className, String codeID) {
+        String mainDir = "/tmp/patent/"+ codeID + "/rios-patent-execute/src/main/java/";
+        String code = mainCode.replace("PACKAGE", packageName + "." + className).replace("APPLICATION", className);
+        // 写入代码
+        return writeFile(mainDir, className + ".scala", code);
+    }
+
+    private static boolean writeCode(String packageName, String className, String code, String codeID) {
+        String dirStr = "/tmp/patent/"+ codeID + "/rios-patent-execute/src/main/java/" +  packageName.replace(".", "/");
+
+        return writeFile(dirStr, className + ".scala", code);
     }
 
 
