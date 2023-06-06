@@ -33,6 +33,47 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class SparkController {
 
+    private static final String defaultCode = "package org.rioslab.spark.core.wc\n" +
+            "import org.apache.spark.sql.functions.col\n" +
+            "import org.apache.spark.{SparkConf, sql}\n" +
+            "import org.apache.spark.sql.{Encoder, Encoders, SparkSession}\n" +
+            "object WordCountSQL {\n" +
+            "    // 这里是程序运行的主函数\n" +
+            "    def run(args: Array[String]): String = {\n" +
+            "        // 创建配置\n" +
+            "        val config = new SparkConf() // 创建一个配置类的对象\n" +
+            "            .setMaster(\"spark://mn1:6540\") // 设置spark的运行模式 local[*] 表示本地运行，自动确定使用的CPU核数\n" +
+            "            .setAppName(\"WordCount SQL Application\") // 这里设置应用名\n" +
+            "        // 这里创建一个Spark Session的对象，里面包含Spark Context，用于Spark运行时的操作\n" +
+            "        val spark = SparkSession.builder().config(config).getOrCreate()\n" +
+            "        // 这里导入将DataSet转换为DataFrame的一些工具类\n" +
+            "        import spark.implicits._\n" +
+            "        // 这里创建一个spark的DataFrame\n" +
+            "        val df = spark\n" +
+            "            .read // 表示读文件\n" +
+            "            .option(\"header\", \"true\") // 设置参数header=true，表示有表头\n" +
+            "            .option(\"multiline\", \"true\") // 设置参数multiline=true，表示一个单元格可能有多行\n" +
+            "            // 使用\"来转义\"\n" +
+            "            .option(\"escape\", \"\\\"\") // 设置escape=\"\\\"\"，表示使用双引号转义双引号。意思在csv文件里\"\"表示\"\n" +
+            "            .csv(\"patent/patent_cleaned.csv\") // 读取csv文件\n" +
+            "        df.show() // 向控制台打印Dataframe\n" +
+            "        // 将Dataframe的每一行的第3列（摘要）第4列（描述），（从0开始计数）连接成一个字符串\n" +
+            "        val lines = df.map(\n" +
+            "            line => line(3).toString + \" \" + line(4).toString\n" +
+            "        )\n" +
+            "        val words = lines.flatMap(_.split(\" \")) // 根据空格拆分字符串成一个个的单词\n" +
+            "        words.show()\n" +
+            "        val wordsGroup = words.groupBy(\"value\") // 根据\"value\"这一个column分组\n" +
+            "        val wordCount = wordsGroup\n" +
+            "            .count() // 统计单词出现的频率\n" +
+            "            .sort(col(\"count\").desc) // 根据count这一个column降序排列\n" +
+            "        wordCount.show()\n" +
+            "        // 不返回数据就返回null\n" +
+            "        val str = wordCount.toJSON.collect().toString\n" +
+            "        str\n" +
+            "    }\n" +
+            "}\n";
+
     @Autowired
     IPublicationsService pubService;
 
@@ -40,6 +81,9 @@ public class SparkController {
     @PostMapping("/submit")
     @CheckPackage
     CommonResult<?> submitJob(@RequestParam("packageName") String packageName, @RequestParam("className") String className, @RequestBody SubmitJobVO body) {
+        if ("WordCountSQL".equals(className) && "org.rioslab.spark.core.wc".equals(packageName)) {
+            body.setCode(defaultCode);
+        }
         String codeID = IdUtil.randomUUID();
         ExecDTO exec = ShellUtil.pack(packageName, className, body.getCode(), codeID);
 

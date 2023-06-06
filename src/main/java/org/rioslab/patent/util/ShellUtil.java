@@ -79,7 +79,7 @@ public class ShellUtil {
             "         xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd\">\n" +
             "    <modelVersion>4.0.0</modelVersion>\n" +
             "\n" +
-            "    <groupId>riolab.org</groupId>\n" +
+            "    <groupId>rioslab.org</groupId>\n" +
             "    <artifactId>rios-patent-execute</artifactId>\n" +
             "    <version>1.0-SNAPSHOT</version>\n" +
             "\n" +
