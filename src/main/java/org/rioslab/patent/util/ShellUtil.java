@@ -98,11 +98,13 @@ public class ShellUtil {
             "            <groupId>org.apache.spark</groupId>\n" +
             "            <artifactId>spark-core_2.13</artifactId>\n" +
             "            <version>${spark.version}</version>\n" +
+            "            <scope>provided</scope>\n" +
             "        </dependency>\n" +
             "        <dependency>\n" +
             "            <groupId>org.apache.spark</groupId>\n" +
             "            <artifactId>spark-sql_2.13</artifactId>\n" +
             "            <version>${spark.version}</version>\n" +
+            "            <scope>provided</scope>\n" +
             "        </dependency>\n" +
             "        <!-- Redis 连接 -->\n" +
             "        <dependency>\n" +
